@@ -21,11 +21,10 @@ function task05()
 {
     const pathToFile = process.argv[2] + "/summary.js";
     const path = require('path');
+    const fs = require('fs');
     let re = new RegExp("[a-z]:([\\/]?([^*|\\/:\"<>]*))*");
     if (re.test(process.argv[2]))
     {
-
-        let fs = require('fs');
         fs.writeFile(path.basename(pathToFile), "", function(err) {
                 if (err) 
                 {
@@ -33,20 +32,10 @@ function task05()
                 }
                 console.log("The file was created!");
             });
-        
-            fs.appendFileSync(pathToFile, "console.log('" + path.dirname(pathToFile) + "');\n");
-            fs.readdir(path.dirname(pathToFile), function(err, listOfContents)
-            {
-                if (err) 
-                {
-                    console.log(err);
-                }
-                listOfContents.forEach(element => 
-                {
-                    fs.appendFileSync(pathToFile, "console.log('" + path.relative(path.dirname(pathToFile), element) + "');\n");
-                });
-            })
-            fs.appendFileSync(pathToFile, "console.log('" + path.dirname(pathToFile) + "');\n");
+            showDirectoryInfo(path.dirname(pathToFile));
+            /*fs.appendFileSync(pathToFile, "console.log('" + path.dirname(pathToFile) + "');\n");*/
+            
+            //fs.appendFileSync(pathToFile, "console.log('" + path.basename(path.dirname(pathToFile)) + "');\n");
             console.log("All is done.");
     }
     else
@@ -54,4 +43,37 @@ function task05()
         console.log("Error: not valid path to directory.");
     }
     console.log(process.argv[2]);
+    function showDirectoryInfo(pathToDir)
+    {
+        console.log(pathToDir);
+        fs.readdir(pathToDir, function(err, listOfContents)
+            {
+                if (err) 
+                {
+                    console.log(err);
+                    console.log(pathToDir);
+                }
+                listOfContents.forEach(element => 
+                {
+                    console.log(listOfContents);
+                    console.log(element);
+                    fs.stat((pathToDir + "\\" + element), function(err, stats)
+                    {
+                        if (err) 
+                        {
+                           console.log(err);
+                           console.log(pathToDir);
+                        }
+                        if (stats.isDirectory())
+                        {
+                            return showDirectoryInfo(pathToDir + "\\" + element);
+                        }
+                        if (stats.isFile())
+                        {
+                            fs.appendFileSync(pathToFile, "console.log('" + path.relative(path.dirname(pathToFile), pathToDir + "\\" + element).toString()  + "');\n");
+                        } 
+                    });
+                });
+            })
+    }
 }
