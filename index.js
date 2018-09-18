@@ -39,16 +39,23 @@ function task05()
             console.log("Task 05.3 started");
             let pathToNewDir = path.dirname(pathToFile) + "\\" + path.basename(path.dirname(pathToFile));
             fs.mkdirSync(pathToNewDir);
-            console.log(pathToNewDir);
+            
             let files = fs.readdirSync(path.dirname(pathToFile));
-            console.log(path.dirname(pathToFile));
+            let copyright = JSON.parse(fs.readFileSync('config.json')).copyright;
             for (let i in files) 
             {
-                console.log(path.extname(files[i]));
                 if (path.extname(files[i]) === ".txt") 
                 {
-                    console.log(files[i]);
-                    fs.copyFileSync(path.dirname(pathToFile) + "\\" + files[i], pathToNewDir + "\\" + files[i]);
+                    let pathToSrc = path.dirname(pathToFile) + "\\" + files[i];
+                    let pathToNewFile = pathToNewDir + "\\" + files[i];
+                    
+                    fs.copyFileSync(pathToSrc, pathToNewFile);
+
+                    let fcontent = fs.readFileSync(pathToNewFile, "utf-8");
+                    
+                    let fileContent = copyright + "\r\n" + fcontent + "\r\n" + copyright;
+                    
+                    fs.writeFileSync(pathToNewFile, fileContent);
                 }
             }
             
