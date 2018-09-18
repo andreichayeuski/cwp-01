@@ -30,35 +30,62 @@ function task05()
                 {
                     throw err;
                 }
-                console.log("The file was created!");
             });
             //task 05.2
             showDirectoryInfo(path.dirname(pathToFile));
-            console.log("Task 05.2 completed");
+            
             //task 05.3
-            console.log("Task 05.3 started");
             let pathToNewDir = path.dirname(pathToFile) + "\\" + path.basename(path.dirname(pathToFile));
             fs.mkdirSync(pathToNewDir);
             
-            let files = fs.readdirSync(path.dirname(pathToFile));
-            let copyright = JSON.parse(fs.readFileSync('config.json')).copyright;
+            let files = fs.readdir(path.dirname(pathToFile), function(err)
+            {
+                if (err) 
+                {
+                    throw err;
+                }
+            });
+            let copyright = JSON.parse(fs.readFile('config.json', function(err)
+            {
+                if (err) 
+                {
+                    throw err;
+                }
+            })).copyright;
             for (let i in files) 
             {
                 if (path.extname(files[i]) === ".txt") 
                 {
                     let pathToSrc = path.dirname(pathToFile) + "\\" + files[i];
                     let pathToNewFile = pathToNewDir + "\\" + files[i];
-                    
-                    fs.copyFileSync(pathToSrc, pathToNewFile);
 
-                    let fcontent = fs.readFileSync(pathToNewFile, "utf-8");
+                    fs.copyFile(pathToSrc, pathToNewFile, function(err)
+                    {
+                        if (err) 
+                        {
+                            throw err;
+                        }
+                    });
+
+                    let fcontent = fs.readFile(pathToNewFile, "utf-8", function(err)
+                    {
+                        if (err) 
+                        {
+                            throw err;
+                        }
+                    });
                     
                     let fileContent = copyright + "\r\n" + fcontent + "\r\n" + copyright;
                     
-                    fs.writeFileSync(pathToNewFile, fileContent);
+                    fs.writeFile(pathToNewFile, fileContent, function(err)
+                    {
+                        if (err) 
+                        {
+                            throw err;
+                        }
+                    });
                 }
             }
-            
             
             //fs.appendFileSync(pathToFile, "console.log('" + path.basename(path.dirname(pathToFile)) + "');\n");
             console.log("All is done.");
@@ -67,7 +94,7 @@ function task05()
     {
         console.log("Error: not valid path to directory.");
     }
-    console.log(process.argv[2]);
+
     function showDirectoryInfo(pathToDir)
     {
         console.log(pathToDir);
@@ -81,7 +108,6 @@ function task05()
                 listOfContents.forEach(element => 
                 {
                     console.log(listOfContents);
-                    console.log(element);
                     fs.stat((pathToDir + "\\" + element), function(err, stats)
                     {
                         if (err) 
